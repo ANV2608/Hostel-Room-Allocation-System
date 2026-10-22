@@ -1,0 +1,7 @@
+studentId
+# S001 holds a SINGLE bed -> S002 should be promoted
+S001
+# S005 holds a DOUBLE bed -> S007 should be promoted
+S005
+# S999 never had a room -> should be ignored safely
+S999

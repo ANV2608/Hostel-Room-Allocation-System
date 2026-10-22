@@ -1,0 +1,69 @@
+======================================================================================
+HOSTEL ALLOCATION REPORT - after allocation
+======================================================================================
+Total requests: 20 | Assigned: 9 | Waitlisted: 5 | Rejected: 6
+
+ROOM OCCUPANCY
+--------------------------------------------------------------------------------------
+Room     Type     Beds      Rent     Occupants
+S101     SINGLE   1/1       Rs.6000  S001
+S102     SINGLE   1/1       Rs.6000  S003
+D201     DOUBLE   2/2       Rs.4500  S010, S006
+D202     DOUBLE   2/2       Rs.4500  S005, S008
+T301     TRIPLE   3/3       Rs.3000  S014, S011, S012
+
+ASSIGNED (9)
+--------------------------------------------------------------------------------------
+ID       Name               Year  Dist (km)  Room   Type
+S006     Meera Nair         3     1200.0     D201   DOUBLE
+S010     Sneha Reddy        4     15.0       D201   DOUBLE
+S005     Kabir Singh        3     500.0      D202   DOUBLE
+S008     Ishita Gupta       2     300.0      D202   DOUBLE
+S001     Aarav Sharma       4     350.0      S101   SINGLE
+S003     Rohan Mehta        3     800.0      S102   SINGLE
+S011     Rahul Joshi        3     250.0      T301   TRIPLE
+S012     Pooja Desai        2     400.0      T301   TRIPLE
+S014     Tanvi Shah         4     200.0      T301   TRIPLE
+
+WAITLISTED (5)
+--------------------------------------------------------------------------------------
+ID       Queue  Name               Year  Dist (km)  Waiting for
+S002     #1     Diya Patel         2     120.0      SINGLE
+S004     #2     Ananya Iyer        1     950.0      SINGLE
+S007     #1     Vikram Rao         2     60.0       DOUBLE
+S009     #2     Arjun Verma        1     700.0      DOUBLE
+S013     #1     Nikhil Kumar       1     600.0      TRIPLE
+
+REJECTED (6)
+--------------------------------------------------------------------------------------
+ID       Name               Reason
+S015     Local Student      Lives within 5.0 km of campus (not eligible)
+S016     Senior Plus        Year of study must be a number from 1 to 4
+S005     Kabir Duplicate    Duplicate request for student ID S005
+S018     Karan Malik        Unknown room type 'QUAD'
+LINE-24  (unreadable line)  Line 24 is malformed: expected 5 columns, found 3
+S020     Neha Kapoor        Year of study must be a number from 1 to 4
+
+EVENT LOG
+--------------------------------------------------------------------------------------
+  1. REJECTED   S015 - Lives within 5.0 km of campus (not eligible)
+  2. REJECTED   S016 - Year of study must be a number from 1 to 4
+  3. REJECTED   S005 - Duplicate request for student ID S005
+  4. REJECTED   S018 - Unknown room type 'QUAD'
+  5. REJECTED   LINE-24 - Line 24 is malformed: expected 5 columns, found 3
+  6. REJECTED   S020 - Year of study must be a number from 1 to 4
+  7. ASSIGNED   S001 -> room S101 (SINGLE)
+  8. ASSIGNED   S014 -> room T301 (TRIPLE)
+  9. ASSIGNED   S010 -> room D201 (DOUBLE)
+ 10. ASSIGNED   S006 -> room D201 (DOUBLE)
+ 11. ASSIGNED   S003 -> room S102 (SINGLE)
+ 12. ASSIGNED   S005 -> room D202 (DOUBLE)
+ 13. ASSIGNED   S011 -> room T301 (TRIPLE)
+ 14. ASSIGNED   S012 -> room T301 (TRIPLE)
+ 15. ASSIGNED   S008 -> room D202 (DOUBLE)
+ 16. WAITLISTED S002 - no SINGLE room free
+ 17. WAITLISTED S007 - no DOUBLE room free
+ 18. WAITLISTED S004 - no SINGLE room free
+ 19. WAITLISTED S009 - no DOUBLE room free
+ 20. WAITLISTED S013 - no TRIPLE room free
+======================================================================================

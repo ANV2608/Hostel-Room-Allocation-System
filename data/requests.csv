@@ -1,0 +1,25 @@
+studentId,name,year,distanceKm,preferredRoom
+# ---- people who want a SINGLE room (only 2 beds exist) ----
+S001,Aarav Sharma,4,350,SINGLE
+S002,Diya Patel,2,120,SINGLE
+S003,Rohan Mehta,3,800,SINGLE
+S004,Ananya Iyer,1,950,SINGLE
+# ---- people who want a DOUBLE room (only 4 beds exist) ----
+S005,Kabir Singh,3,500,DOUBLE
+S006,Meera Nair,3,1200,DOUBLE
+S007,Vikram Rao,2,60,DOUBLE
+S008,Ishita Gupta,2,300,DOUBLE
+S009,Arjun Verma,1,700,DOUBLE
+S010,Sneha Reddy,4,15,DOUBLE
+# ---- people who want a TRIPLE room (only 3 beds exist) ----
+S011,Rahul Joshi,3,250,TRIPLE
+S012,Pooja Desai,2,400,TRIPLE
+S013,Nikhil Kumar,1,600,TRIPLE
+S014,Tanvi Shah,4,200,TRIPLE
+# ---- requests that should be rejected ----
+S015,Local Student,2,3,SINGLE
+S016,Senior Plus,6,400,DOUBLE
+S005,Kabir Duplicate,2,200,DOUBLE
+S018,Karan Malik,2,300,QUAD
+S019,Broken Row,2
+S020,Neha Kapoor,abc,300,SINGLE
