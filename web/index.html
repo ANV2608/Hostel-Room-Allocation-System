@@ -1,0 +1,101 @@
+cat > web/index.html <<'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hostel Allocation</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="top">
+    <div>
+      <h1>Hostel Room Allocation</h1>
+      <p class="sub">Ranks students by year and distance, waitlists when a room type is full, and promotes on check-out.</p>
+    </div>
+    <div class="actions">
+      <button id="btn-sample" class="btn">Load sample data</button>
+      <button id="btn-process" class="btn primary">Run allocation</button>
+      <button id="btn-save" class="btn">Save report</button>
+      <a id="btn-download" class="btn" href="/api/report" download>Download report</a>
+      <button id="btn-reset" class="btn danger">Reset</button>
+    </div>
+  </header>
+
+  <section class="stats" id="stats" aria-label="Summary"></section>
+
+  <main class="layout">
+
+    <aside class="side">
+      <form id="room-form" class="card">
+        <h2>Add room</h2>
+        <label>Room number
+          <input name="roomNumber" placeholder="e.g. S103" required>
+        </label>
+        <label>Type
+          <select name="type">
+            <option>SINGLE</option>
+            <option>DOUBLE</option>
+            <option>TRIPLE</option>
+          </select>
+        </label>
+        <button class="btn primary" type="submit">Add room</button>
+      </form>
+
+      <form id="request-form" class="card">
+        <h2>New request</h2>
+        <label>Student ID
+          <input name="studentId" placeholder="e.g. S021" required>
+        </label>
+        <label>Name
+          <input name="name" placeholder="Full name" required>
+        </label>
+        <div class="row">
+          <label>Year
+            <input name="year" type="number" placeholder="1-4" required>
+          </label>
+          <label>Distance (km)
+            <input name="distanceKm" type="number" step="any" placeholder="from home" required>
+          </label>
+        </div>
+        <label>Preferred room
+          <select name="preferredRoom">
+            <option>SINGLE</option>
+            <option>DOUBLE</option>
+            <option>TRIPLE</option>
+          </select>
+        </label>
+        <button class="btn primary" type="submit">Add to pending</button>
+        <p class="hint">Invalid values (year 7, 2 km from campus...) are accepted on purpose. The validator rejects them when you run the allocation and shows why.</p>
+      </form>
+
+      <form id="checkout-form" class="card">
+        <h2>Check out</h2>
+        <label>Student ID
+          <input name="studentId" placeholder="e.g. S001" required>
+        </label>
+        <button class="btn primary" type="submit">Check out</button>
+        <p class="hint">Frees the bed and promotes the best-ranked waitlisted student for that room type.</p>
+      </form>
+    </aside>
+
+    <section class="content">
+      <div class="card">
+        <h2>Rooms</h2>
+        <div id="rooms" class="rooms"></div>
+      </div>
+
+      <div class="card">
+        <div id="tabs" class="tabs" role="tablist"></div>
+        <div id="table" class="table-wrap"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
+EOF

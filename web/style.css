@@ -1,0 +1,431 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
+
+/* ==================================================================
+   Colour system
+   - each ROOM TYPE has one colour (card, beds, badge)
+   - each STATUS has one colour (count cards, tabs)
+   - each FORM card has one colour
+   ================================================================== */
+:root {
+  --text: #1b1f3b;
+  --paper: #f5f3ff;
+  --card: #ffffff;
+  --muted: #666b8c;
+  --line: #e4e0f7;
+
+  --violet: #6c47ff;
+  --pink: #ff4f8b;
+  --coral: #ff6b4a;
+  --amber: #ffb627;
+  --green: #17b26a;
+  --blue: #2f8bff;
+  --teal: #0fb5ae;
+  --orange: #ff8a3d;
+  --red: #e5384f;
+
+  --radius: 18px;
+  --font: "Outfit", ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #ecebff;
+    --paper: #14122b;
+    --card: #1e1c3f;
+    --muted: #a9a7cf;
+    --line: #322f60;
+    --red: #ff6b7e;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  color: var(--text);
+  font: 15px/1.5 var(--font);
+  background:
+    radial-gradient(900px 420px at 8% -6%, color-mix(in srgb, var(--violet) 16%, transparent), transparent),
+    radial-gradient(760px 420px at 100% 0%, color-mix(in srgb, var(--pink) 14%, transparent), transparent),
+    var(--paper);
+  background-attachment: fixed;
+}
+
+h1 { margin: 0; font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; }
+h2 { margin: 0 0 14px; font-size: 1.1rem; font-weight: 700; }
+
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+/* ==================================================================
+   Banner
+   ================================================================== */
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: center;
+  justify-content: space-between;
+  width: calc(100% - 32px);
+  max-width: 1280px;
+  margin: 20px auto 0;
+  padding: 26px 28px;
+  border-radius: 26px;
+  color: #fff;
+  background: linear-gradient(115deg, #6c47ff 0%, #a43cff 38%, #ff4f8b 78%, #ff8a3d 118%);
+  box-shadow: 0 22px 44px -22px rgba(108, 71, 255, 0.7);
+}
+.sub { margin: 6px 0 0; color: rgba(255, 255, 255, 0.88); max-width: 46ch; }
+
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ==================================================================
+   Buttons
+   ================================================================== */
+.btn {
+  display: inline-block;
+  font: inherit;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn.primary {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--violet), var(--pink));
+}
+.btn.primary:hover { filter: brightness(1.07); }
+.btn.danger { color: var(--red); }
+.btn.mini { padding: 4px 12px; font-size: 0.85rem; border-radius: 9px; }
+
+/* buttons that sit on the gradient banner */
+.top .btn {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.top .btn.primary {
+  color: #5a35ee;
+  background: #fff;
+  border-color: #fff;
+}
+.top .btn.danger { color: #fff; background: rgba(20, 10, 60, 0.28); border-color: transparent; }
+
+/* ==================================================================
+   Count cards (one colour per status)
+   ================================================================== */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+  width: calc(100% - 32px);
+  max-width: 1280px;
+  margin: 18px auto 0;
+}
+
+.stat {
+  --c: var(--violet);
+  --icon: "";
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 14px;
+  align-items: center;
+  padding: 15px 16px 17px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.stat::before {
+  content: var(--icon);
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  font-size: 1.45rem;
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--c) 18%, transparent);
+}
+.stat::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: var(--c);
+}
+.stat .num { font-size: 1.85rem; font-weight: 800; line-height: 1.05; }
+.stat .lbl { color: var(--muted); font-size: 0.9rem; font-weight: 500; }
+
+.stat.pending    { --c: var(--amber);  --icon: "📝"; }
+.stat.assigned   { --c: var(--green);  --icon: "✅"; }
+.stat.waitlisted { --c: var(--blue);   --icon: "⏳"; }
+.stat.rejected   { --c: var(--red);    --icon: "🚫"; }
+.stat.free       { --c: var(--violet); --icon: "🛏️"; }
+
+/* ==================================================================
+   Layout and cards
+   ================================================================== */
+.layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  width: calc(100% - 32px);
+  max-width: 1280px;
+  margin: 20px auto 48px;
+  align-items: start;
+}
+.side, .content { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  h1 { font-size: 1.6rem; }
+}
+
+/* ==================================================================
+   Forms (one colour per form)
+   ================================================================== */
+form.card { --c: var(--violet); border-top: 5px solid var(--c); }
+#room-form     { --c: var(--teal); }
+#request-form  { --c: var(--violet); }
+#checkout-form { --c: var(--coral); }
+
+label { display: block; margin-bottom: 11px; font-size: 0.88rem; font-weight: 500; color: var(--muted); }
+input, select {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--text);
+  background: color-mix(in srgb, var(--c, var(--violet)) 6%, var(--card));
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--c, var(--violet));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c, var(--violet)) 22%, transparent);
+}
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.hint { margin: 12px 0 0; font-size: 0.82rem; color: var(--muted); }
+
+form .btn { width: 100%; }
+form.card .btn.primary { background: var(--c); }
+
+/* ==================================================================
+   Room cards: each one looks like a key tag in its room type colour
+   ================================================================== */
+.rooms { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 14px; }
+
+.room {
+  --c: var(--violet);
+  position: relative;
+  padding: 14px 14px 12px;
+  border-radius: 20px;
+  border: 1.5px solid color-mix(in srgb, var(--c) 35%, var(--line));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c) 13%, var(--card)) 0%, var(--card) 62%);
+}
+/* the hole of the key tag */
+.room::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--c) 45%, transparent);
+}
+.room.single { --c: var(--violet); }
+.room.double { --c: var(--teal); }
+.room.triple { --c: var(--orange); }
+
+.room-head { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin-bottom: 10px; }
+.room-head strong { font-size: 1.6rem; font-weight: 800; line-height: 1; color: var(--c); letter-spacing: -0.01em; }
+
+.beds { display: flex; gap: 6px; margin-bottom: 10px; }
+.bed {
+  width: 30px;
+  height: 18px;
+  border-radius: 6px 6px 4px 4px;
+  border: 2px dashed color-mix(in srgb, var(--c) 45%, transparent);
+}
+.bed.on { border: 2px solid var(--c); background: var(--c); }
+
+.room ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 0.88rem; }
+.room li { display: flex; align-items: center; gap: 8px; }
+.room .meta { margin-top: 10px; font-size: 0.8rem; color: var(--muted); }
+
+.empty { color: var(--muted); font-size: 0.92rem; }
+.rooms > .empty,
+.table-wrap > .empty {
+  grid-column: 1 / -1;
+  padding: 26px 16px;
+  text-align: center;
+  border: 2px dashed var(--line);
+  border-radius: 16px;
+}
+
+/* ==================================================================
+   Badges, avatars
+   ================================================================== */
+.pill {
+  --c: var(--muted);
+  display: inline-block;
+  padding: 2px 11px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--c) 78%, var(--text));
+  background: color-mix(in srgb, var(--c) 17%, transparent);
+}
+.pill.single { --c: var(--violet); }
+.pill.double { --c: var(--teal); }
+.pill.triple { --c: var(--orange); }
+
+.yr {
+  --c: var(--muted);
+  display: inline-block;
+  min-width: 34px;
+  padding: 2px 9px;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--c) 78%, var(--text));
+  background: color-mix(in srgb, var(--c) 17%, transparent);
+}
+.yr.y1 { --c: var(--green); }
+.yr.y2 { --c: var(--blue); }
+.yr.y3 { --c: var(--violet); }
+.yr.y4 { --c: var(--pink); }
+
+.av {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+  background: hsl(var(--h, 250) 62% 46%);
+}
+.who { display: inline-flex; align-items: center; gap: 9px; font-weight: 500; }
+
+.rank {
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: #fff;
+  background: var(--blue);
+}
+.reason { color: var(--red); font-weight: 500; }
+
+/* ==================================================================
+   Tabs (each one has its status colour) and tables
+   ================================================================== */
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+
+.tab {
+  --c: var(--violet);
+  font: inherit;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1.5px solid color-mix(in srgb, var(--c) 40%, var(--line));
+  background: color-mix(in srgb, var(--c) 8%, transparent);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+.tab:hover { transform: translateY(-1px); }
+.tab[data-tab="pending"]  { --c: var(--amber); }
+.tab[data-tab="assigned"] { --c: var(--green); }
+.tab[data-tab="waitlist"] { --c: var(--blue); }
+.tab[data-tab="rejected"] { --c: var(--red); }
+.tab[data-tab="vacated"]  { --c: var(--teal); }
+.tab[data-tab="log"]      { --c: var(--violet); }
+
+.tab.active { background: var(--c); border-color: var(--c); color: #fff; }
+.tab[data-tab="pending"].active { color: #3a2800; }
+
+.tab .count {
+  display: inline-block;
+  min-width: 22px;
+  margin-left: 7px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background: color-mix(in srgb, var(--c) 22%, transparent);
+}
+.tab.active .count { background: rgba(255, 255, 255, 0.3); }
+.tab[data-tab="pending"].active .count { background: rgba(0, 0, 0, 0.12); }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.92rem; }
+th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--violet) 7%, transparent);
+}
+th:first-child { border-top-left-radius: 12px; }
+th:last-child { border-top-right-radius: 12px; }
+tbody tr:hover td { background: color-mix(in srgb, var(--violet) 6%, transparent); }
+tbody tr:last-child td { border-bottom: 0; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.84rem; }
+
+/* ==================================================================
+   Toast
+   ================================================================== */
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  transform: translate(-50%, 24px);
+  max-width: min(92vw, 540px);
+  padding: 12px 20px;
+  border-radius: 14px;
+  background: var(--text);
+  color: var(--paper);
+  font-weight: 600;
+  box-shadow: 0 16px 36px -14px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
+#toast.ok { background: var(--green); color: #fff; }
+#toast.err { background: var(--red); color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, .tab, #toast { transition: none; }
+  .btn:hover, .tab:hover { transform: none; }
+}

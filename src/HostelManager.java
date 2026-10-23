@@ -9,13 +9,6 @@ import java.util.PriorityQueue;
 /**
  * The brain of the system.
  *
- * Collections used:
- *   HashMap<RoomType, List<Room>>                 rooms grouped by type
- *   HashMap<RoomType, PriorityQueue<Request>>     one waitlist per room type,
- *                                                 always ordered by PriorityComparator
- *   HashMap<String, AllocationRequest>            quick lookup by student ID (for check-outs)
- *   ArrayList                                     all requests and the event log
- *
  * Workflow of processRequests():
  *   1. validate each request  -> invalid ones become REJECTED
  *   2. sort the eligible ones with PriorityComparator
@@ -32,6 +25,8 @@ public class HostelManager {
     private final List<AllocationRequest> allRequests = new ArrayList<>();
     private final List<String> eventLog = new ArrayList<>();
     private final Comparator<AllocationRequest> priority = new PriorityComparator();
+    // Kept as a field so duplicate IDs are caught even across several batches
+    private final RequestValidator validator = new RequestValidator();
 
     public HostelManager() {
         for (RoomType type : RoomType.values()) {
@@ -43,15 +38,19 @@ public class HostelManager {
     // ------------------------------------------------------------------
     // Setup
     // ------------------------------------------------------------------
-    public void addRoom(Room room) {
+    // A new room is new free beds, so anyone waiting for that room type
+    // is promoted straight away. Returns the students who were promoted.
+    public List<AllocationRequest> addRoom(Room room) {
         roomsByType.get(room.getType()).add(room);
+        List<AllocationRequest> promoted = new ArrayList<>();
+        promoteFromWaitlist(room.getType(), promoted);
+        return promoted;
     }
 
     // ------------------------------------------------------------------
     // Step 1-3: filter, rank, allocate
     // ------------------------------------------------------------------
     public void processRequests(List<AllocationRequest> requests) {
-        RequestValidator validator = new RequestValidator();
         List<AllocationRequest> eligible = new ArrayList<>();
 
         // Filter: keep the eligible, reject the rest
