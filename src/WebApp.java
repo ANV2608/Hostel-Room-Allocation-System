@@ -21,13 +21,24 @@ import java.util.Map;
 /**
  * Web front end for the hostel allocation system.
  *
- * Uses the JDK's built-in HTTP server (no extra libraries) to
+ * This class uses the JDK's built-in HTTP server (no extra libraries) to
  *   1. serve the web page from the web/ folder, and
  *   2. expose a small JSON API that calls the SAME classes the console
  *      program uses: HostelManager, FileHandler, ReportGenerator ...
  *
  * Start it from the project root:   java -cp out WebApp [port]
  * Then open http://localhost:8080
+ *
+ * API (all POST bodies are form-encoded):
+ *   GET  /api/state          current rooms, requests, waitlists, log
+ *   GET  /api/report         download the text report
+ *   POST /api/room           roomNumber, type
+ *   POST /api/request        studentId, name, year, distanceKm, preferredRoom
+ *   POST /api/process        run allocation on all pending requests
+ *   POST /api/checkout       studentId (frees a bed, promotes the waitlist)
+ *   POST /api/load-sample    load data/rooms.csv and data/requests.csv
+ *   POST /api/save-report    write output/web_report.txt
+ *   POST /api/reset          clear everything
  */
 public class WebApp {
     private static final String DATA_DIR = "data";
@@ -135,12 +146,16 @@ public class WebApp {
     private String addRoom(Map<String, String> f) {
         String number = value(f, "roomNumber").toUpperCase();
         RoomType type = RoomType.fromString(value(f, "type"));
+        Gender gender = Gender.fromString(value(f, "gender"));
 
         if (number.isEmpty()) {
             throw new ApiException(400, "Room number is required");
         }
         if (type == null) {
             throw new ApiException(400, "Choose a valid room type");
+        }
+        if (gender == null) {
+            throw new ApiException(400, "Choose Male or Female for this room");
         }
         for (RoomType t : RoomType.values()) {
             for (Room room : manager.getRooms(t)) {
@@ -149,11 +164,12 @@ public class WebApp {
                 }
             }
         }
-        List<AllocationRequest> promoted = manager.addRoom(RoomFactory.create(type, number));
+        List<AllocationRequest> promoted = manager.addRoom(RoomFactory.create(type, number, gender));
+        String label = "Room " + number + " (" + type + ", " + gender.wing().toLowerCase() + ")";
         if (promoted.isEmpty()) {
-            return "Room " + number + " (" + type + ") added";
+            return label + " added";
         }
-        return "Room " + number + " added. Promoted from waitlist: " + describePromotions(promoted);
+        return label + " added. Promoted from waitlist: " + describePromotions(promoted);
     }
 
     // "S002 -> S101, S004 -> S102"
@@ -175,12 +191,13 @@ public class WebApp {
     private String addRequest(Map<String, String> f) {
         String id = value(f, "studentId").toUpperCase();
         String name = value(f, "name");
+        Gender gender = Gender.fromString(value(f, "gender"));   // null is rejected later
         int year = parseInt(value(f, "year"), 0);
         double distance = parseDouble(value(f, "distanceKm"), -1);
         String typeText = value(f, "preferredRoom");
         RoomType type = RoomType.fromString(typeText);
 
-        pending.add(new AllocationRequest(new Student(id, name, year, distance),
+        pending.add(new AllocationRequest(new Student(id, name, gender, year, distance),
                 type, typeText, nextSequence++));
         return "Request for " + (id.isEmpty() ? "(no ID)" : id)
                 + " queued (" + pending.size() + " pending)";
@@ -289,12 +306,14 @@ public class WebApp {
         StringBuilder waitlist = new StringBuilder("[");
         int waitCount = 0;
         for (RoomType type : RoomType.values()) {
-            int rank = 1;
-            for (AllocationRequest r : manager.getWaitlistSnapshot(type)) {
-                if (waitCount++ > 0) {
-                    waitlist.append(',');
+            for (Gender gender : Gender.values()) {
+                int rank = 1;   // every room type and gender has its own queue
+                for (AllocationRequest r : manager.getWaitlistSnapshot(type, gender)) {
+                    if (waitCount++ > 0) {
+                        waitlist.append(',');
+                    }
+                    waitlist.append(requestJson(r, rank++));
                 }
-                waitlist.append(requestJson(r, rank++));
             }
         }
         waitlist.append(']');
@@ -331,6 +350,7 @@ public class WebApp {
         StringBuilder sb = new StringBuilder();
         sb.append("{\"roomNumber\":").append(q(room.getRoomNumber()))
                 .append(",\"type\":").append(q(room.getType().name()))
+                .append(",\"gender\":").append(q(room.getGender().name()))
                 .append(",\"capacity\":").append(room.getCapacity())
                 .append(",\"occupied\":").append(room.getOccupiedBeds())
                 .append(",\"rent\":").append(room.getMonthlyRent())
@@ -364,6 +384,7 @@ public class WebApp {
         String wants = r.getPreferredType() != null ? r.getPreferredType().name() : r.getPreferredText();
         return "{\"id\":" + q(s.getId())
                 + ",\"name\":" + q(s.getName())
+                + ",\"gender\":" + q(s.getGender() == null ? "" : s.getGender().name())
                 + ",\"year\":" + s.getYear()
                 + ",\"distanceKm\":" + s.getDistanceKm()
                 + ",\"wants\":" + q(wants)
@@ -451,6 +472,9 @@ public class WebApp {
         }
         if (n.endsWith(".png")) {
             return "image/png";
+        }
+        if (n.endsWith(".jpg") || n.endsWith(".jpeg")) {
+            return "image/jpeg";
         }
         return "application/octet-stream";
     }

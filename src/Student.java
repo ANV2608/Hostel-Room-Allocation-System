@@ -6,12 +6,14 @@
 public class Student {
     private final String id;
     private final String name;
+    private final Gender gender;     // null when the text in the file was not valid
     private final int year;          // year of study (1-4)
     private final double distanceKm; // distance of home from the campus
 
-    public Student(String id, String name, int year, double distanceKm) {
+    public Student(String id, String name, Gender gender, int year, double distanceKm) {
         this.id = id;
         this.name = name;
+        this.gender = gender;
         this.year = year;
         this.distanceKm = distanceKm;
     }
@@ -22,6 +24,10 @@ public class Student {
 
     public String getName() {
         return name;
+    }
+
+    public Gender getGender() {
+        return gender;
     }
 
     public int getYear() {
@@ -51,6 +57,6 @@ public class Student {
 
     @Override
     public String toString() {
-        return id + " (" + name + ", year " + year + ", " + distanceKm + " km)";
+        return id + " (" + name + ", " + gender + ", year " + year + ", " + distanceKm + " km)";
     }
 }

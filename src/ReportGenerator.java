@@ -14,15 +14,19 @@ public class ReportGenerator {
 
     public static String build(String title, HostelManager manager) {
         StringBuilder sb = new StringBuilder();
-        String bar = repeat('=', 86);
-        String thin = repeat('-', 86);
+        String bar = repeat('=', 90);
+        String thin = repeat('-', 90);
 
         List<AllocationRequest> assigned = manager.getRequestsByStatus(RequestStatus.ASSIGNED);
         List<AllocationRequest> rejected = manager.getRequestsByStatus(RequestStatus.REJECTED);
         List<AllocationRequest> vacated = manager.getRequestsByStatus(RequestStatus.VACATED);
+
+        // One waitlist exists for every room type and gender
         List<AllocationRequest> waitlisted = new ArrayList<>();
         for (RoomType type : RoomType.values()) {
-            waitlisted.addAll(manager.getWaitlistSnapshot(type));
+            for (Gender gender : Gender.values()) {
+                waitlisted.addAll(manager.getWaitlistSnapshot(type, gender));
+            }
         }
 
         // Assigned students are listed room by room
@@ -46,8 +50,8 @@ public class ReportGenerator {
 
         // ---- Room occupancy ----
         sb.append("ROOM OCCUPANCY\n").append(thin).append('\n');
-        sb.append(String.format("%-8s %-8s %-9s %-8s %s%n",
-                "Room", "Type", "Beds", "Rent", "Occupants"));
+        sb.append(String.format("%-8s %-8s %-8s %-9s %-8s %s%n",
+                "Room", "Type", "Gender", "Beds", "Rent", "Occupants"));
         for (RoomType type : RoomType.values()) {
             for (Room room : manager.getRooms(type)) {
                 StringBuilder names = new StringBuilder();
@@ -57,8 +61,8 @@ public class ReportGenerator {
                     }
                     names.append(s.getId());
                 }
-                sb.append(String.format("%-8s %-8s %-9s Rs.%-5d %s%n",
-                        room.getRoomNumber(), room.getType(),
+                sb.append(String.format("%-8s %-8s %-8s %-9s Rs.%-5d %s%n",
+                        room.getRoomNumber(), room.getType(), room.getGender(),
                         room.getOccupiedBeds() + "/" + room.getCapacity(),
                         room.getMonthlyRent(),
                         names.length() == 0 ? "(empty)" : names.toString()));
@@ -68,12 +72,12 @@ public class ReportGenerator {
 
         // ---- Assigned ----
         sb.append("ASSIGNED (").append(assigned.size()).append(")\n").append(thin).append('\n');
-        sb.append(String.format("%-8s %-18s %-5s %-10s %-6s %s%n",
-                "ID", "Name", "Year", "Dist (km)", "Room", "Type"));
+        sb.append(String.format("%-8s %-18s %-8s %-5s %-10s %-6s %s%n",
+                "ID", "Name", "Gender", "Year", "Dist (km)", "Room", "Type"));
         for (AllocationRequest r : assigned) {
             Student s = r.getStudent();
-            sb.append(String.format("%-8s %-18s %-5d %-10.1f %-6s %s%n",
-                    s.getId(), s.getName(), s.getYear(), s.getDistanceKm(),
+            sb.append(String.format("%-8s %-18s %-8s %-5d %-10.1f %-6s %s%n",
+                    s.getId(), s.getName(), s.getGender(), s.getYear(), s.getDistanceKm(),
                     r.getAssignedRoom().getRoomNumber(), r.getAssignedRoom().getType()));
         }
         if (assigned.isEmpty()) {
@@ -83,15 +87,17 @@ public class ReportGenerator {
 
         // ---- Waitlisted ----
         sb.append("WAITLISTED (").append(waitlisted.size()).append(")\n").append(thin).append('\n');
-        sb.append(String.format("%-8s %-6s %-18s %-5s %-10s %s%n",
-                "ID", "Queue", "Name", "Year", "Dist (km)", "Waiting for"));
+        sb.append(String.format("%-8s %-6s %-18s %-8s %-5s %-10s %s%n",
+                "ID", "Queue", "Name", "Gender", "Year", "Dist (km)", "Waiting for"));
         for (RoomType type : RoomType.values()) {
-            int position = 1;
-            for (AllocationRequest r : manager.getWaitlistSnapshot(type)) {
-                Student s = r.getStudent();
-                sb.append(String.format("%-8s #%-5d %-18s %-5d %-10.1f %s%n",
-                        s.getId(), position++, s.getName(), s.getYear(),
-                        s.getDistanceKm(), type));
+            for (Gender gender : Gender.values()) {
+                int position = 1;
+                for (AllocationRequest r : manager.getWaitlistSnapshot(type, gender)) {
+                    Student s = r.getStudent();
+                    sb.append(String.format("%-8s #%-5d %-18s %-8s %-5d %-10.1f %s%n",
+                            s.getId(), position++, s.getName(), s.getGender(), s.getYear(),
+                            s.getDistanceKm(), type));
+                }
             }
         }
         if (waitlisted.isEmpty()) {

@@ -30,6 +30,9 @@ public class RequestValidator {
         if (s.getName().isEmpty()) {
             return "Student name is missing";
         }
+        if (s.getGender() == null) {
+            return "Gender must be MALE or FEMALE";
+        }
         if (s.getYear() < MIN_YEAR || s.getYear() > MAX_YEAR) {
             return "Year of study must be a number from " + MIN_YEAR + " to " + MAX_YEAR;
         }

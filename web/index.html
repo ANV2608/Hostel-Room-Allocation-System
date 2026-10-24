@@ -1,4 +1,3 @@
-cat > web/index.html <<'EOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,13 +32,21 @@ cat > web/index.html <<'EOF'
         <label>Room number
           <input name="roomNumber" placeholder="e.g. S103" required>
         </label>
-        <label>Type
-          <select name="type">
-            <option>SINGLE</option>
-            <option>DOUBLE</option>
-            <option>TRIPLE</option>
-          </select>
-        </label>
+        <div class="row">
+          <label>Type
+            <select name="type">
+              <option>SINGLE</option>
+              <option>DOUBLE</option>
+              <option>TRIPLE</option>
+            </select>
+          </label>
+          <label>Room for
+            <select name="gender">
+              <option value="MALE">Boys</option>
+              <option value="FEMALE">Girls</option>
+            </select>
+          </label>
+        </div>
         <button class="btn primary" type="submit">Add room</button>
       </form>
 
@@ -52,6 +59,21 @@ cat > web/index.html <<'EOF'
           <input name="name" placeholder="Full name" required>
         </label>
         <div class="row">
+          <label>Gender
+            <select name="gender">
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+            </select>
+          </label>
+          <label>Preferred room
+            <select name="preferredRoom">
+              <option>SINGLE</option>
+              <option>DOUBLE</option>
+              <option>TRIPLE</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
           <label>Year
             <input name="year" type="number" placeholder="1-4" required>
           </label>
@@ -59,13 +81,6 @@ cat > web/index.html <<'EOF'
             <input name="distanceKm" type="number" step="any" placeholder="from home" required>
           </label>
         </div>
-        <label>Preferred room
-          <select name="preferredRoom">
-            <option>SINGLE</option>
-            <option>DOUBLE</option>
-            <option>TRIPLE</option>
-          </select>
-        </label>
         <button class="btn primary" type="submit">Add to pending</button>
         <p class="hint">Invalid values (year 7, 2 km from campus...) are accepted on purpose. The validator rejects them when you run the allocation and shows why.</p>
       </form>
@@ -98,4 +113,3 @@ cat > web/index.html <<'EOF'
   <script src="app.js"></script>
 </body>
 </html>
-EOF

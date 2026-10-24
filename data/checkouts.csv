@@ -1,7 +1,9 @@
 studentId
-# S001 holds a SINGLE bed -> S002 should be promoted
+# S001 holds the boys' SINGLE bed -> boy S003 (not girl S004) should be promoted
 S001
-# S005 holds a DOUBLE bed -> S007 should be promoted
+# S005 holds a boys' DOUBLE bed -> boy S009 should be promoted
 S005
+# S010 holds a girls' DOUBLE bed -> girl S008 should be promoted
+S010
 # S999 never had a room -> should be ignored safely
 S999

@@ -1,3 +1,4 @@
+
 /**
  * The kinds of rooms the hostel offers.
  * An enum is used so that room types can never be misspelled in code.

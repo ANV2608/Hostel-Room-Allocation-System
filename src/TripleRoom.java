@@ -1,8 +1,9 @@
+
 /** INHERITANCE: TripleRoom IS-A Room that sleeps three students. */
 public class TripleRoom extends Room {
 
-    public TripleRoom(String roomNumber) {
-        super(roomNumber);
+    public TripleRoom(String roomNumber, Gender gender) {
+        super(roomNumber, gender);
     }
 
     @Override

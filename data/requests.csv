@@ -1,25 +1,26 @@
-studentId,name,year,distanceKm,preferredRoom
-# ---- people who want a SINGLE room (only 2 beds exist) ----
-S001,Aarav Sharma,4,350,SINGLE
-S002,Diya Patel,2,120,SINGLE
-S003,Rohan Mehta,3,800,SINGLE
-S004,Ananya Iyer,1,950,SINGLE
-# ---- people who want a DOUBLE room (only 4 beds exist) ----
-S005,Kabir Singh,3,500,DOUBLE
-S006,Meera Nair,3,1200,DOUBLE
-S007,Vikram Rao,2,60,DOUBLE
-S008,Ishita Gupta,2,300,DOUBLE
-S009,Arjun Verma,1,700,DOUBLE
-S010,Sneha Reddy,4,15,DOUBLE
-# ---- people who want a TRIPLE room (only 3 beds exist) ----
-S011,Rahul Joshi,3,250,TRIPLE
-S012,Pooja Desai,2,400,TRIPLE
-S013,Nikhil Kumar,1,600,TRIPLE
-S014,Tanvi Shah,4,200,TRIPLE
-# ---- requests that should be rejected ----
-S015,Local Student,2,3,SINGLE
-S016,Senior Plus,6,400,DOUBLE
-S005,Kabir Duplicate,2,200,DOUBLE
-S018,Karan Malik,2,300,QUAD
-S019,Broken Row,2
-S020,Neha Kapoor,abc,300,SINGLE
+
+studentId,name,gender,year,distanceKm,preferredRoom
+S001,Aarav Sharma,Male,4,350,SINGLE
+S002,Diya Patel,Female,2,120,SINGLE
+S003,Rohan Mehta,Male,3,800,SINGLE
+S004,Ananya Iyer,Female,1,950,SINGLE
+S005,Kabir Singh,Male,3,500,DOUBLE
+S006,Meera Nair,Female,3,1200,DOUBLE
+S007,Vikram Rao,Male,2,60,DOUBLE
+S008,Ishita Gupta,Female,2,300,DOUBLE
+S009,Arjun Verma,Male,1,700,DOUBLE
+S010,Sneha Reddy,Female,4,15,DOUBLE
+S011,Rahul Joshi,Male,3,250,TRIPLE
+S012,Pooja Desai,Female,2,400,TRIPLE
+S013,Nikhil Kumar,Male,1,600,TRIPLE
+S014,Tanvi Shah,Female,4,200,TRIPLE
+S021,Dev Malhotra,Male,3,450,TRIPLE
+S022,Karthik Pillai,Male,1,300,TRIPLE
+S015,Local Student,Female,2,3,SINGLE
+S016,Senior Plus,Male,6,400,DOUBLE
+S005,Kabir Duplicate,Male,2,200,DOUBLE
+S018,Karan Malik,Male,2,300,QUAD
+S019,Broken Row,Female,2
+S020,Neha Kapoor,Female,abc,300,SINGLE
+S023,Alex Taylor,X,2,300,SINGLE
+S024,liya,FEMALE,2,300,DOUBLE

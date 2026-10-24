@@ -1,24 +1,29 @@
+
 /**
  * POLYMORPHISM in action: callers ask for a Room and get back the right
- * subclass. Everything after this point just uses the Room type and never
- * needs to know which concrete class it is dealing with.
+ * subclass. Everything after this point uses the Room type.
  */
 public class RoomFactory {
 
     private RoomFactory() {
-        // utility class, no objects needed
+        // Utility class; no objects needed
     }
 
-    public static Room create(RoomType type, String roomNumber) {
+    public static Room create(RoomType type, String roomNumber, Gender gender) {
         switch (type) {
             case SINGLE:
-                return new SingleRoom(roomNumber);
+                return new SingleRoom(roomNumber, gender);
+
             case DOUBLE:
-                return new DoubleRoom(roomNumber);
+                return new DoubleRoom(roomNumber, gender);
+
             case TRIPLE:
-                return new TripleRoom(roomNumber);
+                return new TripleRoom(roomNumber, gender);
+
             default:
-                throw new IllegalArgumentException("Unsupported room type: " + type);
+                throw new IllegalArgumentException(
+                        "Unsupported room type: " + type
+                );
         }
     }
 }
