@@ -1,8 +1,4 @@
 
-/**
- * One student's request for a room, plus what has happened to it so far.
- * Status, assigned room and remark are updated through the mark...() methods.
- */
 public class AllocationRequest {
 
     private final Student student;
@@ -15,7 +11,7 @@ public class AllocationRequest {
     private Room assignedRoom;
     private String remark = "";
 
-    // A normally parsed request
+
     public AllocationRequest(Student student, RoomType preferredType,
                              String preferredText, int sequence) {
         this.student = student;
@@ -25,7 +21,6 @@ public class AllocationRequest {
         this.parseError = null;
     }
 
-    // A line that could not be understood
     public AllocationRequest(int sequence, String placeholderId,
                              String parseError) {
         this.student = new Student(

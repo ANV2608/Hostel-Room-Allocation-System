@@ -1,8 +1,4 @@
 
-/**
- * POLYMORPHISM in action: callers ask for a Room and get back the right
- * subclass. Everything after this point uses the Room type.
- */
 public class RoomFactory {
 
     private RoomFactory() {

@@ -5,34 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
-
-/**
- * The brain of the system.
- *
- * Collections used:
- *   HashMap<RoomType, List<Room>>                 rooms grouped by type
- *   HashMap<Gender, HashMap<RoomType, PriorityQueue>>
- *                                                 one waitlist for every gender and
- *                                                 room type, always ordered by
- *                                                 PriorityComparator
- *   HashMap<String, AllocationRequest>            quick lookup by student ID (for check-outs)
- *   ArrayList                                     all requests and the event log
- *
- * Gender rule: a student is only ever placed in a room of the same gender,
- * and waits in the waitlist of their own gender. A free bed in a girls' room
- * is never offered to a boy, and the other way round.
- *
- * Workflow of processRequests():
- *   1. validate each request  -> invalid ones become REJECTED
- *   2. sort the eligible ones with PriorityComparator
- *   3. try to give each a room of the preferred type and own gender,
- *      otherwise WAITLIST
- *
- * Workflow of checkout():
- *   1. free the student's bed
- *   2. promote the highest-priority waitlisted student of the same
- *      room type and gender
- */
 public class HostelManager {
     private final Map<RoomType, List<Room>> roomsByType = new HashMap<>();
     private final Map<Gender, Map<RoomType, PriorityQueue<AllocationRequest>>> waitlists = new HashMap<>();
@@ -40,7 +12,6 @@ public class HostelManager {
     private final List<AllocationRequest> allRequests = new ArrayList<>();
     private final List<String> eventLog = new ArrayList<>();
     private final Comparator<AllocationRequest> priority = new PriorityComparator();
-    // Kept as a field so duplicate IDs are caught even across several batches
     private final RequestValidator validator = new RequestValidator();
 
     public HostelManager() {
@@ -60,11 +31,6 @@ public class HostelManager {
         return waitlists.get(gender).get(type);
     }
 
-    // ------------------------------------------------------------------
-    // Setup
-    // ------------------------------------------------------------------
-    // A new room is new free beds, so anyone of the same gender waiting for
-    // that room type is promoted straight away. Returns who was promoted.
     public List<AllocationRequest> addRoom(Room room) {
         roomsByType.get(room.getType()).add(room);
         List<AllocationRequest> promoted = new ArrayList<>();
@@ -72,13 +38,9 @@ public class HostelManager {
         return promoted;
     }
 
-    // ------------------------------------------------------------------
-    // Step 1-3: filter, rank, allocate
-    // ------------------------------------------------------------------
     public void processRequests(List<AllocationRequest> requests) {
         List<AllocationRequest> eligible = new ArrayList<>();
 
-        // Filter: keep the eligible, reject the rest
         for (AllocationRequest request : requests) {
             allRequests.add(request);
             String reason = validator.validate(request);
@@ -90,11 +52,9 @@ public class HostelManager {
                 log("REJECTED   " + request.getStudent().getId() + " - " + reason);
             }
         }
-
-        // Rank: custom comparator decides the order
         Collections.sort(eligible, priority);
 
-        // Allocate: best-ranked student picks first
+
         for (AllocationRequest request : eligible) {
             Student student = request.getStudent();
             if (tryAssign(request)) {
@@ -109,8 +69,6 @@ public class HostelManager {
             }
         }
     }
-
-    // Looks for a free bed of the preferred type in a room for the student's gender
     private boolean tryAssign(AllocationRequest request) {
         for (Room room : roomsByType.get(request.getPreferredType())) {
             if (room.canAccept(request.getStudent())) {
@@ -122,9 +80,7 @@ public class HostelManager {
         return false;
     }
 
-    // ------------------------------------------------------------------
-    // Check-out and automatic waitlist promotion
-    // ------------------------------------------------------------------
+
     public List<AllocationRequest> checkout(String studentId) {
         List<AllocationRequest> promoted = new ArrayList<>();
         String id = studentId.trim().toUpperCase();
@@ -143,25 +99,20 @@ public class HostelManager {
         promoteFromWaitlist(room.getGender(), room.getType(), promoted);
         return promoted;
     }
-
-    // Keeps promoting while there is both a free bed and someone waiting
     private void promoteFromWaitlist(Gender gender, RoomType type, List<AllocationRequest> promoted) {
         PriorityQueue<AllocationRequest> queue = waitlist(gender, type);
         while (!queue.isEmpty()) {
-            AllocationRequest next = queue.peek();   // highest priority waiting
+            AllocationRequest next = queue.peek();   
             if (!tryAssign(next)) {
-                break;                               // no bed free, stop
+                break;                               
             }
-            queue.poll();                            // remove from waitlist
+            queue.poll();                            
             promoted.add(next);
             log("PROMOTED   " + next.getStudent().getId() + " from waitlist -> room "
                     + next.getAssignedRoom().getRoomNumber() + " (" + type + ", " + gender + ")");
         }
     }
 
-    // ------------------------------------------------------------------
-    // Read-only views used by the report
-    // ------------------------------------------------------------------
     public List<AllocationRequest> getRequestsByStatus(RequestStatus status) {
         List<AllocationRequest> result = new ArrayList<>();
         for (AllocationRequest request : allRequests) {
@@ -174,7 +125,7 @@ public class HostelManager {
 
     public List<AllocationRequest> getWaitlistSnapshot(RoomType type, Gender gender) {
         List<AllocationRequest> snapshot = new ArrayList<>(waitlist(gender, type));
-        Collections.sort(snapshot, priority);   // PriorityQueue iteration is not sorted
+        Collections.sort(snapshot, priority);   
         return snapshot;
     }
 

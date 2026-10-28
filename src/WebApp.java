@@ -18,28 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Web front end for the hostel allocation system.
- *
- * This class uses the JDK's built-in HTTP server (no extra libraries) to
- *   1. serve the web page from the web/ folder, and
- *   2. expose a small JSON API that calls the SAME classes the console
- *      program uses: HostelManager, FileHandler, ReportGenerator ...
- *
- * Start it from the project root:   java -cp out WebApp [port]
- * Then open http://localhost:8080
- *
- * API (all POST bodies are form-encoded):
- *   GET  /api/state          current rooms, requests, waitlists, log
- *   GET  /api/report         download the text report
- *   POST /api/room           roomNumber, type
- *   POST /api/request        studentId, name, year, distanceKm, preferredRoom
- *   POST /api/process        run allocation on all pending requests
- *   POST /api/checkout       studentId (frees a bed, promotes the waitlist)
- *   POST /api/load-sample    load data/rooms.csv and data/requests.csv
- *   POST /api/save-report    write output/web_report.txt
- *   POST /api/reset          clear everything
- */
 public class WebApp {
     private static final String DATA_DIR = "data";
     private static final String WEB_DIR = "web";
@@ -62,7 +40,6 @@ public class WebApp {
     }
 
     private void start(int port) throws IOException {
-        // Bound to the loopback address, so only this computer can reach it
         HttpServer server = HttpServer.create(
                 new InetSocketAddress(InetAddress.getLoopbackAddress(), port), 0);
         server.createContext("/api/", this::handleApi);
@@ -72,9 +49,7 @@ public class WebApp {
         System.out.println("Open http://localhost:" + port + " in your browser. Press Ctrl+C to stop.");
     }
 
-    // ==================================================================
-    // API routing
-    // ==================================================================
+    
     private synchronized void handleApi(HttpExchange ex) throws IOException {
         String path = ex.getRequestURI().getPath();
         String method = ex.getRequestMethod();
@@ -96,8 +71,7 @@ public class WebApp {
             if (!method.equals("POST")) {
                 throw new ApiException(405, "Use POST for " + path);
             }
-            // Browsers cannot add a custom header to a cross-site form post, so this
-            // blocks other websites from driving the API while it runs on your PC.
+            
             if (!"hostel-ui".equals(ex.getRequestHeaders().getFirst("X-Requested-With"))) {
                 throw new ApiException(403, "Missing X-Requested-With header");
             }
@@ -140,9 +114,6 @@ public class WebApp {
         }
     }
 
-    // ==================================================================
-    // Actions (each returns a message for the toast in the browser)
-    // ==================================================================
     private String addRoom(Map<String, String> f) {
         String number = value(f, "roomNumber").toUpperCase();
         RoomType type = RoomType.fromString(value(f, "type"));
@@ -172,7 +143,6 @@ public class WebApp {
         return label + " added. Promoted from waitlist: " + describePromotions(promoted);
     }
 
-    // "S002 -> S101, S004 -> S102"
     private static String describePromotions(List<AllocationRequest> promoted) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < promoted.size(); i++) {
@@ -186,8 +156,6 @@ public class WebApp {
         return sb.toString();
     }
 
-    // Bad values are accepted here on purpose: the validator rejects them
-    // later and the report shows the reason.
     private String addRequest(Map<String, String> f) {
         String id = value(f, "studentId").toUpperCase();
         String name = value(f, "name");
@@ -278,9 +246,6 @@ public class WebApp {
         return "Everything cleared";
     }
 
-    // ==================================================================
-    // JSON output (hand-written so no library is needed)
-    // ==================================================================
     private String stateJson() {
         List<AllocationRequest> assigned = manager.getRequestsByStatus(RequestStatus.ASSIGNED);
         List<AllocationRequest> rejected = manager.getRequestsByStatus(RequestStatus.REJECTED);
@@ -394,7 +359,7 @@ public class WebApp {
                 + ",\"rank\":" + rank + "}";
     }
 
-    // Escapes a Java string into a quoted JSON string
+   
     private static String q(String s) {
         StringBuilder sb = new StringBuilder("\"");
         for (int i = 0; i < s.length(); i++) {
@@ -426,9 +391,6 @@ public class WebApp {
         return sb.append('"').toString();
     }
 
-    // ==================================================================
-    // Static files (the web page itself)
-    // ==================================================================
     private void handleStatic(HttpExchange ex) throws IOException {
         String path = ex.getRequestURI().getPath();
         if (path.equals("/")) {
@@ -438,7 +400,7 @@ public class WebApp {
         Path base = Paths.get(WEB_DIR).toAbsolutePath().normalize();
         Path file = base.resolve(path.substring(1)).normalize();
 
-        // Refuse anything outside web/ (e.g. /../src/Main.java)
+       
         if (!file.startsWith(base) || !Files.isRegularFile(file)) {
             String hint = Files.isDirectory(base)
                     ? "Not found: " + path
@@ -479,9 +441,6 @@ public class WebApp {
         return "application/octet-stream";
     }
 
-    // ==================================================================
-    // Small HTTP helpers
-    // ==================================================================
     private static void sendJson(HttpExchange ex, int status, String json) throws IOException {
         ex.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
         ex.getResponseHeaders().set("Cache-Control", "no-store");
@@ -495,7 +454,6 @@ public class WebApp {
         }
     }
 
-    // Java 8 has no InputStream.readAllBytes(), so read in a loop (max 1 MB)
     private static String readBody(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buffer = new byte[4096];

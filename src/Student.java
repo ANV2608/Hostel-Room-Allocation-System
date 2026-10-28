@@ -1,14 +1,10 @@
-/**
- * ENCAPSULATION: all fields are private and final. The outside world can
- * only read them through getters, so a Student can never be changed
- * accidentally after it has been created.
- */
+
 public class Student {
     private final String id;
     private final String name;
-    private final Gender gender;     // null when the text in the file was not valid
-    private final int year;          // year of study (1-4)
-    private final double distanceKm; // distance of home from the campus
+    private final Gender gender;     
+    private final int year;          
+    private final double distanceKm; 
 
     public Student(String id, String name, Gender gender, int year, double distanceKm) {
         this.id = id;
@@ -38,7 +34,7 @@ public class Student {
         return distanceKm;
     }
 
-    // Two students are the same person if their IDs match.
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) {

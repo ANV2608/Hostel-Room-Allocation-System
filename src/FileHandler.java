@@ -9,45 +9,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-/**
- * FILE HANDLING: everything that touches the disk lives here.
- *
- *   readRooms()       data/rooms.csv      -> list of Room objects
- *   readRequests()    data/requests.csv   -> list of AllocationRequest objects
- *   readCheckouts()   data/checkouts.csv  -> list of student IDs
- *   writeReport()     output/*.txt        <- the generated report
- *
- * File formats:
- *   rooms.csv      roomNumber,type,gender
- *   requests.csv   studentId,name,gender,year,distanceKm,preferredRoom
- *   checkouts.csv  one student ID per line
- *
- * How the CSV files are read:
- *   - every file is read once into rows (readRows), then each reader turns
- *     the rows into objects
- *   - blank lines and lines starting with '#' are ignored
- *   - the first real line is skipped if it is a header (e.g. "studentId,...")
- *   - fields may be wrapped in double quotes, so  "Sharma, Aarav"  stays one
- *     field, and  ""  inside quotes means a literal quote character
- *   - one bad line never stops the program: bad rooms are skipped with a
- *     warning, bad requests become REJECTED requests with the reason
- *
- * Every error that reaches the caller is an IOException with a message that
- * can be shown to the user as it is.
- */
 public class FileHandler {
 
-    private static final int ROOM_COLUMNS = 3;      // roomNumber,type,gender
-    private static final int REQUEST_COLUMNS = 6;   // studentId,name,gender,year,distanceKm,preferredRoom
+    private static final int ROOM_COLUMNS = 3;      
+    private static final int REQUEST_COLUMNS = 6;   
 
     private FileHandler() {
         // utility class, no objects needed
     }
 
-    // ==================================================================
-    // rooms.csv : roomNumber,type,gender
-    // ==================================================================
+    
     public static List<Room> readRooms(Path path) throws IOException {
         List<Room> rooms = new ArrayList<>();
         Set<String> seen = new HashSet<>();
@@ -79,9 +50,6 @@ public class FileHandler {
         return rooms;
     }
 
-    // ==================================================================
-    // requests.csv : studentId,name,gender,year,distanceKm,preferredRoom
-    // ==================================================================
     public static List<AllocationRequest> readRequests(Path path) throws IOException {
         List<AllocationRequest> requests = new ArrayList<>();
         int sequence = 0;   // arrival order, the final tie-breaker when ranking
@@ -89,8 +57,6 @@ public class FileHandler {
         for (Row row : readRows(path, "studentId")) {
             sequence++;
 
-            // A line we cannot split into 6 fields still becomes a request, so the
-            // report can list it as REJECTED with the reason instead of hiding it.
             if (row.error != null) {
                 requests.add(new AllocationRequest(sequence, "LINE-" + row.lineNumber,
                         "Line " + row.lineNumber + " is malformed: " + row.error));
@@ -116,9 +82,6 @@ public class FileHandler {
         return requests;
     }
 
-    // ==================================================================
-    // checkouts.csv : one student ID per line (the file is optional)
-    // ==================================================================
     public static List<String> readCheckouts(Path path) throws IOException {
         List<String> ids = new ArrayList<>();
         if (!Files.exists(path)) {
@@ -129,7 +92,7 @@ public class FileHandler {
                 warn(path, row, row.error);
                 continue;
             }
-            String id = row.fields.get(0).toUpperCase();   // extra columns are ignored
+            String id = row.fields.get(0).toUpperCase();   
             if (!id.isEmpty()) {
                 ids.add(id);
             }
@@ -137,14 +100,6 @@ public class FileHandler {
         return ids;
     }
 
-    // ==================================================================
-    // report output
-    // ==================================================================
-    /**
-     * Writes the report, creating the folder if needed. The text goes to a
-     * temporary file first and is then moved into place, so a crash half way
-     * can never leave a half-written report behind.
-     */
     public static void writeReport(Path path, String content) throws IOException {
         Path folder = path.toAbsolutePath().getParent();
         Files.createDirectories(folder);
@@ -154,19 +109,14 @@ public class FileHandler {
             Files.write(temp, content.getBytes(StandardCharsets.UTF_8));
             Files.move(temp, path, StandardCopyOption.REPLACE_EXISTING);
         } finally {
-            Files.deleteIfExists(temp);   // only does something if the move failed
+            Files.deleteIfExists(temp);   
         }
     }
 
-    // ==================================================================
-    // Reading and splitting lines
-    // ==================================================================
-
-    /** One usable line of a CSV file: its number, its fields, or why it could not be split. */
     private static final class Row {
-        final int lineNumber;          // 1-based, as an editor shows it
-        final List<String> fields;     // empty when error is set
-        final String error;            // null when the line was split fine
+        final int lineNumber;          
+        final List<String> fields;     
+        final String error;            
 
         Row(int lineNumber, List<String> fields, String error) {
             this.lineNumber = lineNumber;
@@ -175,7 +125,7 @@ public class FileHandler {
         }
     }
 
-    /** Reads a CSV file and returns only its real data lines (no blanks, comments or header). */
+    
     private static List<Row> readRows(Path path, String headerFirstColumn) throws IOException {
         List<String> lines;
         try {
@@ -192,7 +142,7 @@ public class FileHandler {
 
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i).trim();
-            if (i == 0 && line.startsWith("﻿")) {   // invisible marker that Excel adds
+            if (i == 0 && line.startsWith("﻿")) {   
                 line = line.substring(1).trim();
             }
             if (line.isEmpty() || line.startsWith("#")) {
@@ -201,7 +151,7 @@ public class FileHandler {
 
             List<String> fields = splitCsv(line);
 
-            // Only the first real line can be a header
+            
             if (!firstLineSeen) {
                 firstLineSeen = true;
                 if (fields != null && fields.get(0).equalsIgnoreCase(headerFirstColumn)) {
@@ -218,12 +168,6 @@ public class FileHandler {
         return rows;
     }
 
-    /**
-     * Splits one CSV line into trimmed fields.
-     * Returns null if a quote is opened and never closed.
-     * A quote only starts a quoted value at the beginning of a field, so a
-     * name like  O"Brien  is left alone.
-     */
     private static List<String> splitCsv(String line) {
         List<String> fields = new ArrayList<>();
         StringBuilder current = new StringBuilder();
@@ -235,16 +179,16 @@ public class FileHandler {
             if (inQuotes) {
                 if (c == '"') {
                     if (i + 1 < line.length() && line.charAt(i + 1) == '"') {
-                        current.append('"');   // "" is a literal quote
+                        current.append('"');   
                         i++;
                     } else {
-                        inQuotes = false;      // closing quote
+                        inQuotes = false;      
                     }
                 } else {
                     current.append(c);
                 }
             } else if (c == '"' && current.toString().trim().isEmpty()) {
-                current.setLength(0);          // opening quote, drop the spaces before it
+                current.setLength(0);          
                 inQuotes = true;
             } else if (c == ',') {
                 fields.add(current.toString().trim());
@@ -260,10 +204,6 @@ public class FileHandler {
         fields.add(current.toString().trim());
         return fields;
     }
-
-    // ==================================================================
-    // Small helpers
-    // ==================================================================
     private static void warn(Path path, Row row, String message) {
         System.err.println("Warning: " + path.getFileName() + " line " + row.lineNumber
                 + " skipped: " + message);
@@ -280,7 +220,6 @@ public class FileHandler {
     private static double parseDouble(String text, double fallback) {
         try {
             double value = Double.parseDouble(text.trim());
-            // "NaN" and "Infinity" parse successfully but are not real distances
             return (Double.isNaN(value) || Double.isInfinite(value)) ? fallback : value;
         } catch (NumberFormatException e) {
             return fallback;

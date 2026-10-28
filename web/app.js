@@ -3,11 +3,6 @@
 
 let state = null;
 let activeTab = "pending";
-
-// ================================================================
-// HELPERS
-// ================================================================
-
 function esc(value) {
   return String(value == null ? "" : value)
     .replace(/&/g, "&amp;")
@@ -78,10 +73,6 @@ function showToast(message, error = false) {
     toast.className = "";
   }, 3500);
 }
-
-// ================================================================
-// API
-// ================================================================
 
 async function call(path, body) {
   try {

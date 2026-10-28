@@ -1,18 +1,9 @@
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Decides whether a request is eligible for allocation.
- * validate() returns null when the request is fine, or a human readable
- * rejection reason when it is not.
- *
- * A HashSet remembers the student IDs already accepted, so a second request
- * from the same student is caught as a duplicate.
- */
 public class RequestValidator {
     public static final int MIN_YEAR = 1;
     public static final int MAX_YEAR = 4;
-    // Students living closer than this to the campus are not eligible for a hostel.
     public static final double MIN_DISTANCE_KM = 5.0;
 
     private final Set<String> acceptedIds = new HashSet<>();

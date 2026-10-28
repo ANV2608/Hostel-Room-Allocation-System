@@ -93,10 +93,6 @@ public class Main {
         }
     }
 
-    // ----------------------------------------
-    // ADD ROOM
-    // ----------------------------------------
-
     private static void addRoom() {
         System.out.println("\n--- Add New Room ---");
 
@@ -122,10 +118,6 @@ public class Main {
         printPromotions(promoted);
         showRooms();
     }
-
-    // ----------------------------------------
-    // ADD STUDENT AND ALLOCATE
-    // ----------------------------------------
 
     private static void addStudent() {
         System.out.println("\n--- Register Student ---");
@@ -179,7 +171,7 @@ public class Main {
                 sequence++
         );
 
-        // Process this student's request immediately.
+        
         manager.processRequests(Collections.singletonList(request));
         studentIds.add(id);
 
@@ -187,14 +179,10 @@ public class Main {
         System.out.println("Student: " + name + " (" + id + ")");
         System.out.println("Preferred room: " + preferredRoom);
 
-        // Display the updated allocation and occupancy.
+       
         showReport();
         showRooms();
     }
-
-    // ----------------------------------------
-    // CHECK OUT STUDENT
-    // ----------------------------------------
 
     private static void checkoutStudent() {
         System.out.println("\n--- Student Check-Out ---");
@@ -233,9 +221,7 @@ public class Main {
         showRooms();
     }
 
-    // ----------------------------------------
-    // DISPLAY ROOMS
-    // ----------------------------------------
+
 
     private static void showRooms() {
         System.out.println("\n========== ROOM STATUS ==========");
@@ -285,10 +271,6 @@ public class Main {
         System.out.println("=================================");
     }
 
-    // ----------------------------------------
-    // REPORT
-    // ----------------------------------------
-
     private static void showReport() {
         String report = ReportGenerator.build(
                 "HOSTEL ROOM ALLOCATION REPORT",
@@ -315,9 +297,6 @@ public class Main {
         }
     }
 
-    // ----------------------------------------
-    // HELPER METHODS
-    // ----------------------------------------
 
     private static Room findRoom(String number) {
         for (RoomType type : RoomType.values()) {

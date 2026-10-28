@@ -1,5 +1,4 @@
 
-/** INHERITANCE: DoubleRoom IS-A Room that sleeps two students. */
 public class DoubleRoom extends Room {
 
     public DoubleRoom(String roomNumber, Gender gender) {

@@ -1,4 +1,4 @@
-/** INHERITANCE: SingleRoom IS-A Room. It only supplies what is different. */
+
 public class SingleRoom extends Room {
 
     public SingleRoom(String roomNumber, Gender gender) {
